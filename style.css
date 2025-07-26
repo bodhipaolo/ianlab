@@ -1,0 +1,52 @@
+body {
+  margin: 0;
+  background: #111;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  text-align: center;
+}
+
+h1 {
+  font-size: 4rem;
+  margin-bottom: 40px;
+  letter-spacing: 2px;
+  color: #00ffe7;
+}
+
+/* Cube style */
+.cube {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: spin 8s infinite linear;
+  margin: 0 auto;
+}
+
+.face {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: #00ffe7;
+  opacity: 0.6;
+  border: 2px solid white;
+}
+
+.front  { transform: translateZ(50px); }
+.back   { transform: rotateY(180deg) translateZ(50px); }
+.right  { transform: rotateY(90deg) translateZ(50px); }
+.left   { transform: rotateY(-90deg) translateZ(50px); }
+.top    { transform: rotateX(90deg) translateZ(50px); }
+.bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+@keyframes spin {
+  from { transform: rotateX(0deg) rotateY(0deg); }
+  to   { transform: rotateX(360deg) rotateY(360deg); }
+}
