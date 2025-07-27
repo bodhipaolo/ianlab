@@ -1,66 +1,122 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ian Lab - Stampa 3D del Futuro</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <meta charset="UTF-8">
+  <title>Visualizzatore 3D STL</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #viewer {
+      width: 100%;
+      height: 500px;
+      background-color: #eee;
+      margin-top: 20px;
+    }
+    #upload-button {
+      margin: 20px 0;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
-    <header class="hero">
-        <img src="assets/logo.svg" alt="Ian Lab Logo" class="logo" />
-        <h1><span class="highlight">Stampa 3D</span> del Futuro</h1>
-        <p>Trasforma le tue idee in realtà con la nostra Bambu Lab A1 Mini.</p>
-        <p>Preventivi AI istantanei, qualità professionale, integrazione MakerWorld.</p>
 
-        <div class="buttons">
-            <a href="preventivo.html" class="btn primary">Inizia Ora</a>
-            <a href="#demo" class="btn secondary">Guarda la demo</a>
-        </div>
+  <!-- Sezione con bottone -->
+  <button id="upload-button">Visualizzatore 3D</button>
+  <input type="file" id="file-input" accept=".stl" style="display: none;">
 
-        <div class="stats">
-            <div><strong>35</strong><br>Stampe Completate</div>
-            <div><strong>12</strong><br>Ore Servizio</div>
-            <div><strong>48%</strong><br>Soddisfazione</div>
-        </div>
-    </header>
+  <!-- Sezione esistente -->
+  <section id="precise-measurement">
+    <h2>Misurazione Precisa</h2>
+    <p>Contenuto della sezione...</p>
+  </section>
 
-    <section class="services">
-        <h2>Servizi Avanzati</h2>
-        <div class="service-cards">
-            <div class="card">
-                <h3>Preventivo AI</h3>
-                <ul>
-                    <li>✔ Analisi automatica STL</li>
-                    <li>✔ Calcolo materiali</li>
-                    <li>✔ Tempi di stampa</li>
-                </ul>
-            </div>
-            <div class="card">
-                <h3>Visualizzatore 3D</h3>
-                <ul>
-                    <li>✔ Controlli touch</li>
-                    <li>✔ Anteprima strati</li>
-                    <li>✔ Misurazione precisa</li>
-                </ul>
-            </div>
-            <div class="card">
-                <h3>MakerWorld Connect</h3>
-                <ul>
-                    <li>✔ Libreria progetti</li>
-                    <li>✔ Scarica direttamente</li>
-                    <li>✔ Stampa con un clic</li>
-                </ul>
-            </div>
-        </div>
-    </section>
+  <!-- Canvas per 3D Viewer -->
+  <div id="viewer"></div>
 
-    <footer>
-        <p>&copy; 2025 Ian Lab - Tutti i diritti riservati</p>
-    </footer>
+  <!-- Script Three.js e STL Loader -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.156.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.156.1/examples/js/loaders/STLLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.156.1/examples/js/controls/OrbitControls.js"></script>
 
-    <script src="script.js"></script>
+  <script>
+    const uploadBtn = document.getElementById('upload-button');
+    const fileInput = document.getElementById('file-input');
+    const viewer = document.getElementById('viewer');
+
+    let scene, camera, renderer, controls;
+
+    // Setup scene
+    function initViewer() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+      viewer.innerHTML = '';
+      viewer.appendChild(renderer.domElement);
+
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(1, 1, 1).normalize();
+      scene.add(light);
+
+      const ambientLight = new THREE.AmbientLight(0x404040);
+      scene.add(ambientLight);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.update();
+
+      camera.position.set(0, 0, 100);
+      controls.update();
+
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    function loadSTL(file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const contents = e.target.result;
+
+        const loader = new THREE.STLLoader();
+        const geometry = loader.parse(contents);
+
+        const material = new THREE.MeshStandardMaterial({ color: 0x6699ff });
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.clear();  // remove previous model
+        initViewer();   // reset scene, camera, renderer
+        scene.add(mesh);
+
+        // Optional: Center the object
+        const box = new THREE.Box3().setFromObject(mesh);
+        const center = box.getCenter(new THREE.Vector3());
+        mesh.position.sub(center);
+
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    uploadBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file && file.name.endsWith('.stl')) {
+        loadSTL(file);
+      } else {
+        alert('Per favore carica un file .stl valido.');
+      }
+    });
+
+    // Inizializza il visualizzatore vuoto all'avvio
+    initViewer();
+  </script>
 </body>
 </html>
