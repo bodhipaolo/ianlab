@@ -22,7 +22,7 @@
 </head>
 <body>
 
-  <!-- Sezione con bottone -->
+  <!-- Bottone per selezionare il file -->
   <button id="upload-button">Visualizzatore 3D</button>
   <input type="file" id="file-input" accept=".stl" style="display: none;">
 
@@ -35,10 +35,10 @@
   <!-- Canvas per 3D Viewer -->
   <div id="viewer"></div>
 
-  <!-- Script Three.js e STL Loader -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.156.1/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.156.1/examples/js/loaders/STLLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.156.1/examples/js/controls/OrbitControls.js"></script>
+  <!-- Three.js r149 + STLLoader + OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/loaders/STLLoader.js"></script>
 
   <script>
     const uploadBtn = document.getElementById('upload-button');
@@ -47,7 +47,6 @@
 
     let scene, camera, renderer, controls;
 
-    // Setup scene
     function initViewer() {
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(75, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
@@ -59,13 +58,9 @@
       const light = new THREE.DirectionalLight(0xffffff, 1);
       light.position.set(1, 1, 1).normalize();
       scene.add(light);
-
-      const ambientLight = new THREE.AmbientLight(0x404040);
-      scene.add(ambientLight);
+      scene.add(new THREE.AmbientLight(0x404040));
 
       controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.update();
-
       camera.position.set(0, 0, 100);
       controls.update();
 
@@ -82,17 +77,16 @@
       const reader = new FileReader();
       reader.onload = function (e) {
         const contents = e.target.result;
-
         const loader = new THREE.STLLoader();
         const geometry = loader.parse(contents);
 
         const material = new THREE.MeshStandardMaterial({ color: 0x6699ff });
         const mesh = new THREE.Mesh(geometry, material);
-        scene.clear();  // remove previous model
-        initViewer();   // reset scene, camera, renderer
+
+        scene.clear();
+        initViewer();
         scene.add(mesh);
 
-        // Optional: Center the object
         const box = new THREE.Box3().setFromObject(mesh);
         const center = box.getCenter(new THREE.Vector3());
         mesh.position.sub(center);
@@ -115,7 +109,6 @@
       }
     });
 
-    // Inizializza il visualizzatore vuoto all'avvio
     initViewer();
   </script>
 </body>
