@@ -22,23 +22,20 @@
 </head>
 <body>
 
-  <!-- Bottone per selezionare il file -->
-  <button id="upload-button">Visualizzatore 3D (ver 1)</button>
+  <button id="upload-button">Visualizzatore 3D</button>
   <input type="file" id="file-input" accept=".stl" style="display: none;">
 
-  <!-- Sezione esistente -->
   <section id="precise-measurement">
     <h2>Misurazione Precisa</h2>
     <p>Contenuto della sezione...</p>
   </section>
 
-  <!-- Canvas per 3D Viewer -->
   <div id="viewer"></div>
 
-  <!-- Three.js r149 + STLLoader + OrbitControls -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/loaders/STLLoader.js"></script>
+  <!-- Three.js e loader compatibili -->
+  <script src="https://unpkg.com/three@0.130.1/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.130.1/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://unpkg.com/three@0.130.1/examples/js/loaders/STLLoader.js"></script>
 
   <script>
     const uploadBtn = document.getElementById('upload-button');
